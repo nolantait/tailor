@@ -3,10 +3,11 @@ module Tailor
     attr_reader :styles
 
     def initialize(**theme)
+      @methods = Object.new
       @styles = Hash.new do |hash, key|
         hash[key] = Style.new.tap do
-          define_singleton_method(key) do
-            @styles[key]
+          @methods.define_singleton_method(key) do
+            hash[key]
           end
         end
       end
@@ -48,6 +49,10 @@ module Tailor
           theme.styles[key] = theme.styles[key].merge(style)
         end
       end
+    end
+
+    def method_missing(method, *, &block)
+      @methods.send(method, *, &block)
     end
   end
 end

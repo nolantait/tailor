@@ -23,7 +23,10 @@ RSpec.describe Tailor::Theme do
       theme = described_class.new
       theme.add(:container, "justify-between")
 
+      other_theme = theme.dup
+
       expect(theme.container.to_s).to eq "justify-between"
+      expect(other_theme.container.to_s).to eq "justify-between"
     end
   end
 
