@@ -3,8 +3,12 @@ module Tailor
     attr_reader :styles
 
     def initialize(**theme)
-      @styles = Hash.new do
-        Style.new
+      @styles = Hash.new do |hash, key|
+        hash[key] = Style.new.tap do
+          define_singleton_method(key) do
+            @styles[key]
+          end
+        end
       end
 
       theme.each do |key, css_classes|
@@ -17,12 +21,6 @@ module Tailor
     def add(key, css_class)
       tap do
         @styles[key] = @styles[key].add css_class
-
-        unless respond_to?(key)
-          define_singleton_method(key) do
-            @styles[key]
-          end
-        end
       end
     end
 
