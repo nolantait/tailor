@@ -2,9 +2,15 @@ module Tailor
   class Theme
     attr_reader :styles
 
-    def initialize
+    def initialize(**theme)
       @styles = Hash.new do
         Style.new
+      end
+
+      theme.each do |key, css_classes|
+        css_classes.each do |css_class|
+          add(key, css_class)
+        end
       end
     end
 
@@ -25,11 +31,19 @@ module Tailor
     end
 
     def inherit(other_theme)
-      other_theme.merge(self)
+      other_theme.override(self)
+    end
+
+    def override(other_theme)
+      @styles.merge(other_theme.styles)
     end
 
     def merge(other_theme)
-      @styles.merge(other_theme.styles)
+      dup.tap do |theme|
+        other_theme.styles.each do |key, style|
+          theme.styles[key] = theme.styles[key].merge(style)
+        end
+      end
     end
   end
 end
