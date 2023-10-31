@@ -19,6 +19,12 @@ module Tailor
       end
     end
 
+    def style(key, css_classes)
+      css_classes.each do |css_class|
+        add(key, css_class)
+      end
+    end
+
     def add(key, css_class)
       tap do
         @styles[key] = @styles[key].add css_class
@@ -33,6 +39,16 @@ module Tailor
 
     def [](key)
       @styles[key]
+    end
+
+    # TODO: Setting a theme as a key, awkward
+    def []=(key, theme)
+      @styles.tap do |styles|
+        styles[key] = theme
+        @methods.define_singleton_method(key) do
+          styles[key]
+        end
+      end
     end
 
     def inherit(other_theme)
@@ -51,8 +67,16 @@ module Tailor
       end
     end
 
+    def respond_to_missing?(method, *)
+      @methods.respond_to?(method)
+    end
+
     def method_missing(method, *, &block)
-      @methods.send(method, *, &block)
+      if @methods.respond_to?(method)
+        @methods.send(method, *, &block)
+      else
+        super
+      end
     end
   end
 end

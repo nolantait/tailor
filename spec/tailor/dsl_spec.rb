@@ -1,7 +1,11 @@
 class MyStyle
   include Tailor::DSL
 
-  style :container, ["justify-between"]
+  style :container, %w[justify-between]
+
+  tailor :header do
+    style :title, %w[text-2xl]
+  end
 end
 
 RSpec.describe Tailor::DSL do
@@ -11,5 +15,8 @@ RSpec.describe Tailor::DSL do
 
     klass.style[:container].add("p-sm")
     expect(klass.style[:container].to_s).to eq "justify-between p-sm"
+
+    expect(klass.style[:header][:title].to_s).to eq "text-2xl"
+    expect(klass.style.header.title.to_s).to eq "text-2xl"
   end
 end
