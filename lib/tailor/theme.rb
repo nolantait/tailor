@@ -17,6 +17,12 @@ module Tailor
     def add(key, css_class)
       tap do
         @styles[key] = @styles[key].add css_class
+
+        unless respond_to?(key)
+          define_singleton_method(key) do
+            @styles[key]
+          end
+        end
       end
     end
 

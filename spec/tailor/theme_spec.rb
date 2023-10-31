@@ -18,6 +18,13 @@ RSpec.describe Tailor::Theme do
 
       expect(theme[:container].to_s).to eq "justify-between"
     end
+
+    it "adds a singleton method" do
+      theme = described_class.new
+      theme.add(:container, "justify-between")
+
+      expect(theme.container.to_s).to eq "justify-between"
+    end
   end
 
   describe "#remove" do

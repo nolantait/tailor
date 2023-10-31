@@ -3,7 +3,7 @@
 require_relative "lib/tailor/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "Tailor"
+  spec.name = "inhouse-tailor"
   spec.version = Tailor::VERSION
   spec.authors = ["Nolan J Tait"]
   spec.email = ["nolanjtait@gmail.com"]

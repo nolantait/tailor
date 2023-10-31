@@ -27,5 +27,9 @@ module Tailor
     def to_s
       @classes.to_a.join(" ")
     end
+
+    def to_str
+      to_s
+    end
   end
 end

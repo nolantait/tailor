@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    Tailor (0.1.0)
+    inhouse-tailor (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -114,8 +114,8 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  Tailor!
   debug
+  inhouse-tailor!
   rake
   rspec
   rubocop-inhouse

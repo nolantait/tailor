@@ -11,7 +11,7 @@ module Tailor
   class Error < StandardError; end
   # Your code goes here...
 
-  def new
-    Theme.new
+  def new(...)
+    Theme.new(...)
   end
 end
