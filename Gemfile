@@ -8,4 +8,4 @@ gemspec
 gem "debug"
 gem "rake"
 gem "rspec"
-gem "rubocop-inhouse", path: "../rubocop-inhouse"
+gem "rubocop-inhouse"
