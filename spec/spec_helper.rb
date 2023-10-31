@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "debug"
 require "tailor"
 
 RSpec.configure do |config|
