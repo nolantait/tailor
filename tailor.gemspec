@@ -25,7 +25,18 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
       (File.expand_path(f) == __FILE__) ||
-        f.start_with?(*%w[bin/ test/ spec/ features/ .git .circleci appveyor Gemfile])
+        f.start_with?(
+          *%w[
+            bin/
+            test/
+            spec/
+            features/
+            .git
+            .circleci
+            appveyor
+            Gemfile
+          ]
+        )
     end
   end
   spec.bindir = "exe"
@@ -37,4 +48,5 @@ Gem::Specification.new do |spec|
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

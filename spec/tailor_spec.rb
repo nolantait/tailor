@@ -2,6 +2,6 @@
 
 RSpec.describe Tailor do
   it "has a version number" do
-    expect(Tailor::VERSION).not_to be nil
+    expect(Tailor::VERSION).not_to be_nil
   end
 end
