@@ -12,7 +12,7 @@ module Tailor
       def tailor(key, &block)
         Theme.new.tap do |theme|
           theme.instance_eval(&block)
-          styles[key] = theme
+          styles.add(key, theme)
         end
       end
     end
