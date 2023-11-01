@@ -1,7 +1,6 @@
 module Tailor
   class Theme
     attr_accessor :styles
-    attr_accessor :custom_methods
 
     class Collection < Hash
       include Hashie::Extensions::MergeInitializer
@@ -9,19 +8,14 @@ module Tailor
       include Hashie::Extensions::DeepMerge
     end
 
-    Observer = ->(method_store) do
+    CollectionFactory = -> do
       Collection.new do |hash, key|
-        hash[key] = Style.new.tap do
-          method_store.define_singleton_method(key) do
-            hash[key]
-          end
-        end
+        hash[key] = Style.new
       end
     end
 
     def initialize_copy(other)
-      self.custom_methods = Object.new
-      self.styles = Observer.call(custom_methods)
+      self.styles = CollectionFactory.call
       other.styles.each do |key, style|
         add(key, style)
       end
@@ -29,8 +23,7 @@ module Tailor
     end
 
     def initialize(**theme)
-      @custom_methods = Object.new
-      @styles = Observer.call(@custom_methods)
+      @styles = CollectionFactory.call
 
       theme.each do |key, css_classes|
         css_classes.each do |css_class|
@@ -84,12 +77,12 @@ module Tailor
     protected
 
     def respond_to_missing?(method, *)
-      custom_methods.respond_to?(method)
+      styles.respond_to?(method)
     end
 
     def method_missing(method, *, &block)
-      if custom_methods.respond_to?(method)
-        custom_methods.send(method, *, &block)
+      if styles.respond_to?(method)
+        styles.send(method, *, &block)
       else
         super
       end
@@ -98,11 +91,8 @@ module Tailor
     private
 
     def add_theme(key, theme)
-      @styles.tap do |styles|
+      styles.tap do |styles|
         styles[key] = theme
-        @custom_methods.define_singleton_method(key) do
-          styles[key]
-        end
       end
     end
 
