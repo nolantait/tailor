@@ -1,19 +1,16 @@
 module Tailor
   module DSL
     module ClassMethods
-      def style(key, css_classes)
-        styles.style(key, css_classes)
+      def __tailor_namespace
+        @namespace ||= Namespace.new
       end
 
-      def styles
-        @styles ||= Theme.new
+      def style(key, css_classes)
+        __tailor_namespace.style(key, css_classes)
       end
 
       def tailor(key, &block)
-        Theme.new.tap do |theme|
-          theme.instance_eval(&block)
-          styles[key] = theme
-        end
+        __tailor_namespace.namespace(key, &block)
       end
     end
 
@@ -22,7 +19,7 @@ module Tailor
     end
 
     def style
-      @style ||= self.class.styles
+      @style ||= self.class.__tailor_namespace
     end
 
     def style=(other_style)

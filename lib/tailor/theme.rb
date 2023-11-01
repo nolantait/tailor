@@ -2,54 +2,67 @@ module Tailor
   class Theme
     attr_accessor :styles
 
-    def initialize(**theme)
-      @methods = Object.new
-      @styles = Hash.new do |hash, key|
-        hash[key] = Style.new.tap do
-          @methods.define_singleton_method(key) do
-            hash[key]
-          end
-        end
+    class Collection < Hash
+      include Hashie::Extensions::MergeInitializer
+      include Hashie::Extensions::MethodAccess
+      include Hashie::Extensions::DeepMerge
+    end
+
+    CollectionFactory = -> do
+      Collection.new do |hash, key|
+        hash[key] = Style.new
       end
+    end
+
+    private_constant :CollectionFactory
+
+    def initialize_copy(other)
+      self.styles = CollectionFactory.call
+      other.styles.each do |key, style|
+        add_style(key, style)
+      end
+      super
+    end
+
+    def initialize(**theme)
+      @styles = CollectionFactory.call
 
       theme.each do |key, css_classes|
-        css_classes.each do |css_class|
-          add(key, css_class)
+        add(key, css_classes)
+      end
+    end
+
+    def add_namespace(key, namespace)
+      tap do
+        styles[key] = namespace
+      end
+    end
+
+    def add_style(key, style)
+      tap do
+        styles[key] = styles[key].add style
+      end
+    end
+
+    def add(key, classes)
+      tap do
+        Array(classes).tap do |classes|
+          classes << "" if classes.empty?
+          styles[key] = styles[key].add Style.new(classes:)
         end
       end
     end
 
-    def style(key, css_classes)
-      css_classes << "" if css_classes.empty?
-      css_classes.each do |css_class|
-        add(key, css_class)
-      end
-    end
-
-    def add(key, css_class)
+    def remove(key, classes)
       tap do
-        @styles[key] = @styles[key].add css_class
-      end
-    end
-
-    def remove(key, css_class)
-      tap do
-        @styles[key].remove css_class
+        Array(classes).tap do |classes|
+          styles[key] = styles[key].remove Style.new(classes:)
+        end
       end
     end
 
     def [](key)
-      @styles[key]
-    end
-
-    # TODO: Setting a theme as a key, awkward
-    def []=(key, theme)
-      @styles.tap do |styles|
-        styles[key] = theme
-        @methods.define_singleton_method(key) do
-          styles[key]
-        end
-      end
+      styles[key]
     end
 
     def inherit(other_theme)
@@ -57,7 +70,7 @@ module Tailor
     end
 
     def override(other_theme)
-      @styles.merge(other_theme.styles)
+      styles.merge(other_theme.styles)
     end
 
     def merge(other_theme)
@@ -65,20 +78,6 @@ module Tailor
         other_theme.styles.each do |key, style|
           theme.styles[key] = theme.styles[key].merge(style)
         end
-      end
-    end
-
-    protected
-
-    def respond_to_missing?(method, *)
-      @methods.respond_to?(method)
-    end
-
-    def method_missing(method, *, &block)
-      if @methods.respond_to?(method)
-        @methods.send(method, *, &block)
-      else
-        super
       end
     end
   end

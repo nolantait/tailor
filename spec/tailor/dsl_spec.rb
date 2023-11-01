@@ -14,7 +14,7 @@ RSpec.describe Tailor::DSL do
     klass = MyStyle.new
     expect(klass.style[:container].to_s).to eq "justify-between"
 
-    klass.style[:container].add("p-sm")
+    klass.style.add(:container, "p-sm")
     expect(klass.style[:container].to_s).to eq "justify-between p-sm"
 
     expect(klass.style[:header][:title].to_s).to eq "text-2xl"
