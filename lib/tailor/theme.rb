@@ -3,8 +3,14 @@ module Tailor
     attr_accessor :styles
     attr_accessor :custom_methods
 
+    class Collection < Hash
+      include Hashie::Extensions::MergeInitializer
+      include Hashie::Extensions::MethodAccess
+      include Hashie::Extensions::DeepMerge
+    end
+
     Observer = ->(method_store) do
-      Hash.new do |hash, key|
+      Collection.new do |hash, key|
         hash[key] = Style.new.tap do
           method_store.define_singleton_method(key) do
             hash[key]

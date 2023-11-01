@@ -2,6 +2,7 @@
 
 require "dry/types"
 require "dry/struct"
+require "hashie"
 
 require_relative "tailor/version"
 require_relative "tailor/types"
