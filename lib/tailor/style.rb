@@ -2,15 +2,15 @@ module Tailor
   class Style < Dry::Struct
     attribute :classes, Types::Array.of(Types::String).default([].freeze)
 
-    def add(css_class)
+    def add(style)
       self.class.new(
-        classes: classes + Array(css_class)
+        classes: classes + style.classes
       )
     end
 
-    def remove(css_class)
+    def remove(style)
       self.class.new(
-        classes: classes - Array(css_class)
+        classes: classes - style.classes
       )
     end
 

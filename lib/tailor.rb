@@ -8,6 +8,7 @@ require_relative "tailor/version"
 require_relative "tailor/types"
 require_relative "tailor/style"
 require_relative "tailor/theme"
+require_relative "tailor/namespace"
 require_relative "tailor/dsl"
 
 module Tailor

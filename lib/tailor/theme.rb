@@ -32,17 +32,11 @@ module Tailor
       end
     end
 
-    def style(key, css_classes)
-      css_classes << "" if css_classes.empty?
-      css_classes.each do |css_class|
-        add(key, css_class)
-      end
-    end
-
     def add(key, styleable)
       case styleable
-      when Theme then add_theme(key, styleable)
-      when Style, String then add_style(key, styleable)
+      when Namespace then add_namespace(key, styleable)
+      when Style then add_style(key, styleable)
+      when String then add_css_class(key, styleable)
       else
         raise ArgumentError, "Invalid styleable: #{styleable.inspect}"
       end
@@ -50,12 +44,12 @@ module Tailor
 
     def remove(key, css_class)
       tap do
-        @styles[key] = @styles[key].remove css_class
+        styles[key] = styles[key].remove Style.new(classes: Array(css_class))
       end
     end
 
     def [](key)
-      @styles[key]
+      styles[key]
     end
 
     def inherit(other_theme)
@@ -63,7 +57,7 @@ module Tailor
     end
 
     def override(other_theme)
-      @styles.merge(other_theme.styles)
+      styles.merge(other_theme.styles)
     end
 
     def merge(other_theme)
@@ -74,31 +68,26 @@ module Tailor
       end
     end
 
-    protected
-
-    def respond_to_missing?(method, *)
-      styles.respond_to?(method)
-    end
-
-    def method_missing(method, *, &block)
-      if styles.respond_to?(method)
-        styles.send(method, *, &block)
-      else
-        super
-      end
-    end
-
     private
 
-    def add_theme(key, theme)
+    def add_namespace(key, namespace)
       styles.tap do |styles|
-        styles[key] = theme
+        styles[key] = namespace
+        define_singleton_method(key) do
+          styles[key]
+        end
       end
     end
 
-    def add_style(key, stringable)
+    def add_style(key, style)
       tap do
-        @styles[key] = @styles[key].add stringable.to_s
+        styles[key] = styles[key].add style
+      end
+    end
+
+    def add_css_class(key, css_class)
+      tap do
+        styles[key] = styles[key].add Style.new(classes: Array(css_class))
       end
     end
   end
