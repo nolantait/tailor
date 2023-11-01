@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Tailor
   class Theme
     attr_accessor :styles

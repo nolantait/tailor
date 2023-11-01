@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Tailor
   class Namespace
     # DOCS: Represents the public interface of Theme.

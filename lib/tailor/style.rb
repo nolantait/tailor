@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Tailor
   class Style < Dry::Struct
     attribute :classes, Types::Array.of(Types::String).default([].freeze)

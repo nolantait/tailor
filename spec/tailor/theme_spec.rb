@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Tailor::Theme do
   describe "initialization" do
     it "inits with no args" do

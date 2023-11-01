@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Tailor
   module DSL
     module ClassMethods
       def __tailor_namespace
-        @namespace ||= Namespace.new
+        @__tailor_namespace ||= Namespace.new
       end
 
       def style(key, css_classes)
