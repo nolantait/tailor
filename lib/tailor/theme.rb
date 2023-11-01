@@ -1,6 +1,6 @@
 module Tailor
   class Theme
-    attr_reader :styles
+    attr_accessor :styles
 
     def initialize(**theme)
       @methods = Object.new
@@ -20,6 +20,7 @@ module Tailor
     end
 
     def style(key, css_classes)
+      css_classes << "" if css_classes.empty?
       css_classes.each do |css_class|
         add(key, css_class)
       end
@@ -66,6 +67,8 @@ module Tailor
         end
       end
     end
+
+    protected
 
     def respond_to_missing?(method, *)
       @methods.respond_to?(method)

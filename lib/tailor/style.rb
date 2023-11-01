@@ -1,6 +1,6 @@
 module Tailor
   class Style
-    attr_reader :classes
+    attr_accessor :classes
 
     def initialize
       @classes = Set.new
