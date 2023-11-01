@@ -14,6 +14,8 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
+Tailor holds the styles you define in a hash like object:
+
 ```ruby
 theme = Tailor.new(container: "block")
 theme.add(:container, "p-sm")
@@ -22,6 +24,8 @@ theme.remove(:container, "p-sm")
 
 theme[:container].to_s #=> "block flex"
 ```
+
+This allows for declarative styles that can be easily overridden:
 
 ```ruby
 theme = Tailor.new(container: "block")
@@ -37,15 +41,69 @@ overridden = theme.override(other_theme)
 overridden[:container].to_s #=> "inline-block"
 ```
 
+Tailor is meant to be used as a DSL on renderable components:
+
 ```ruby
 class MyStyle
   include Tailor::DSL
 
   style :container, ["justify-between"]
+
+  tailor :footer do
+    style :wrapper, ["flex flex-col"]
+  end
 end
 
 component = MyStyle.new
 component.style[:container].to_s #=> "justify-between"
+component.style.footer.wrapper.to_s #=> "flex flex-col"
+```
+
+Here is an example of what a [Phlex](https://www.phlex.fun/) component could look like:
+
+```ruby
+class ApplicationComponent < Phlex::HTML
+  include Tailor::DSL
+
+  def initialize(**params)
+    @custom_style = params[:class]
+  end
+
+  def style
+    @style ||= super.merge(Tailor.new(**@custom_style))
+  end
+end
+
+module Ui
+  class Navbar < ApplicationComponent
+    style :container, %w[p-sm flex justify-between]
+    style :links, %w[flex items-center gap-sm]
+    style :link, %w[link]
+    style :logo, %w[font-bold]
+
+    def template
+      header class: style.container do
+        link_to root_path do
+          h5(class: style.logo) { "Tailor" }
+
+          nav(class: style.links) do
+            link_to "Sign in", "#", class: style.link
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+This allows our component to be overridden with styles easily:
+
+```ruby
+render Ui::Navbar.new(
+    class: {
+        container: ["p-lg flex justify-between"]
+    }
+)
 ```
 
 ## Development
