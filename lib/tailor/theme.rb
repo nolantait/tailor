@@ -14,6 +14,8 @@ module Tailor
       end
     end
 
+    private_constant :CollectionFactory
+
     def initialize_copy(other)
       self.styles = CollectionFactory.call
       other.styles.each do |key, style|
@@ -31,7 +33,7 @@ module Tailor
     end
 
     def add_namespace(key, namespace)
-      styles.tap do |styles|
+      tap do
         styles[key] = namespace
       end
     end
@@ -51,9 +53,11 @@ module Tailor
       end
     end
 
-    def remove(key, css_class)
+    def remove(key, classes)
       tap do
-        styles[key] = styles[key].remove Style.new(classes: Array(css_class))
+        Array(classes).tap do |classes|
+          styles[key] = styles[key].remove Style.new(classes:)
+        end
       end
     end
 
@@ -76,9 +80,5 @@ module Tailor
         end
       end
     end
-
-
-    private
-
   end
 end
