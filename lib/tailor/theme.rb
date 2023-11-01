@@ -17,7 +17,7 @@ module Tailor
     def initialize_copy(other)
       self.styles = CollectionFactory.call
       other.styles.each do |key, style|
-        add(key, style)
+        add_style(key, style)
       end
       super
     end
@@ -26,19 +26,31 @@ module Tailor
       @styles = CollectionFactory.call
 
       theme.each do |key, css_classes|
-        css_classes.each do |css_class|
-          add(key, css_class)
+        add(key, css_classes)
+      end
+    end
+
+    def add_namespace(key, namespace)
+      styles.tap do |styles|
+        styles[key] = namespace
+        define_singleton_method(key) do
+          styles[key]
         end
       end
     end
 
-    def add(key, styleable)
-      case styleable
-      when Namespace then add_namespace(key, styleable)
-      when Style then add_style(key, styleable)
-      when String then add_css_class(key, styleable)
-      else
-        raise ArgumentError, "Invalid styleable: #{styleable.inspect}"
+    def add_style(key, style)
+      tap do
+        styles[key] = styles[key].add style
+      end
+    end
+
+    def add(key, classes)
+      tap do
+        Array(classes).tap do |classes|
+          classes << "" if classes.empty?
+          styles[key] = styles[key].add Style.new(classes:)
+        end
       end
     end
 
@@ -68,27 +80,8 @@ module Tailor
       end
     end
 
+
     private
 
-    def add_namespace(key, namespace)
-      styles.tap do |styles|
-        styles[key] = namespace
-        define_singleton_method(key) do
-          styles[key]
-        end
-      end
-    end
-
-    def add_style(key, style)
-      tap do
-        styles[key] = styles[key].add style
-      end
-    end
-
-    def add_css_class(key, css_class)
-      tap do
-        styles[key] = styles[key].add Style.new(classes: Array(css_class))
-      end
-    end
   end
 end

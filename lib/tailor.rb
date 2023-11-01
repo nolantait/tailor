@@ -18,6 +18,6 @@ module Tailor
   # Your code goes here...
 
   def new(...)
-    Theme.new(...)
+    Namespace.new(...)
   end
 end

@@ -14,18 +14,24 @@ module Tailor
     end
 
     def add(key, styleable)
-      @theme.add key, styleable
+      case styleable
+      when Namespace then @theme.add_namespace(key, styleable)
+      when Style then @theme.add_style(key, styleable)
+      when String then @theme.add(key, styleable)
+      else
+        raise ArgumentError, "Invalid styleable: #{styleable.inspect}"
+      end
     end
 
     def style(key, classes)
       classes << "" if classes.empty?
-      @theme.add key, Style.new(classes:)
+      add key, Style.new(classes:)
     end
 
     def namespace(key, &block)
       self.class.new.tap do |namespace|
         namespace.instance_eval(&block)
-        @theme.add key, namespace
+        add key, namespace
       end
     end
 
