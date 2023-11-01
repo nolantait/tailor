@@ -33,9 +33,6 @@ module Tailor
     def add_namespace(key, namespace)
       styles.tap do |styles|
         styles[key] = namespace
-        define_singleton_method(key) do
-          styles[key]
-        end
       end
     end
 

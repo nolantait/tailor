@@ -5,8 +5,8 @@ module Tailor
 
     attr_reader :theme
 
-    def initialize
-      @theme = Theme.new
+    def initialize(...)
+      @theme = Theme.new(...)
     end
 
     def [](key)
